@@ -1,0 +1,64 @@
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+  db:
+    image: postgres
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_DB=daphne
+      - POSTGRES_USER=daphne
+      - POSTGRES_PASSWORD=daphnetest
+    ports:
+      - '5432:5432'
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+  frontend:
+    build: ./daphne-at-interface
+    container_name: frontend
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+    #command: npm run dev
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./daphne-at-interface:/usr/src/app/daphne-at-interface
+    tty: true
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    build: ./daphne_brain
+    #command: "python manage.py migrate && python manage.py runserver 8000"
+    container_name: backend
+    environment:
+      - PORT=8000
+      - DJANGO_ALLOWED_HOSTS=db
+      - POSTGRES_ENGINE=django.db.backends.postgresql
+      - POSTGRES_DB=daphne
+      - POSTGRES_USER=daphne
+      - POSTGRES_PASSWORD=daphnetest
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./daphne_brain:/usr/src/app/daphne_brain
+volumes:
+  pgdata:
