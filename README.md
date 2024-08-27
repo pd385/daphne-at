@@ -7,3 +7,4 @@ This code dockerizes daphne-at and all its services for local development enviro
 3. cd into the directory from your CLI or Terminal.
 4. Run the command: docker compose up
 
+NOTE: For development purposes you may need to change the environment variables in the dockerfile.
