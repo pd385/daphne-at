@@ -15,8 +15,8 @@ COPY ./. /usr/src/app/daphne-at-interface/
 EXPOSE 8080
 
 #CMD npm run dev
-#CMD [ "npm", "run", "dev"]
-CMD npm run dev --host 0.0.0.0
+CMD [ "npm", "run", "dev"]
+#CMD npm run dev --host 0.0.0.0
 #
 #RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash - && \
 #    apt-get install -y nodejs
