@@ -9,7 +9,7 @@ COPY ./. /usr/src/app/daphne_brain/.
 # Set env variables
 ENV DJANGO_SETTINGS_MODULE=daphne_brain.settings \
     USER=daphne \
-    PASSWORD=daphnetest \
+    PASSWORD=daphnetest
     #OPENAI_API_KEY=''\
 
 # Update apt-get package manager -- Install daphne_brain dependencies
